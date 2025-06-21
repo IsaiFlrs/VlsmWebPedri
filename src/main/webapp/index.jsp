@@ -73,7 +73,7 @@
         </header>
 
         <div class="container">
-            <form action="ControladorVLSM" method="post">
+            <form action="${pageContext.request.contextPath}/ControladorVLSM" method="post">
                 <label for="ip">Dirección IP Base:</label>
                 <input type="text" id="ip" name="ip" placeholder="Ej. 192.168.1.0">
 
