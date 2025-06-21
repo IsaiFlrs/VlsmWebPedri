@@ -13,31 +13,54 @@ public class ControladorVLSM extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        String ipBase = request.getParameter("ip");
-        String mascara = request.getParameter("mascara");
-        String[] subredesTexto = request.getParameter("subredes").split("\\r?\\n");
+        try {
+            // 1. Obtener parámetros del formulario
+            String ipBase = request.getParameter("ip");
+            String mascara = request.getParameter("mascara");
+            String subredesParam = request.getParameter("subredes");
 
-        List<Integer> tamamosSubredes = new ArrayList<>();
-        for (String linea : subredesTexto) {
-            try {
-                tamamosSubredes.add(Integer.parseInt(linea.trim()));
-            } catch (NumberFormatException e) {
-                // Ignora líneas que no son números
+            // Validación básica
+            if (ipBase == null || ipBase.isEmpty() || 
+                mascara == null || mascara.isEmpty() ||
+                subredesParam == null || subredesParam.isEmpty()) {
+                throw new ServletException("Todos los campos son requeridos");
             }
+
+            // 2. Procesar subredes
+            String[] subredesTexto = subredesParam.split("\\r?\\n");
+            List<Integer> tamanosSubredes = new ArrayList<>();
+
+            for (String linea : subredesTexto) {
+                try {
+                    tamanosSubredes.add(Integer.parseInt(linea.trim()));
+                } catch (NumberFormatException e) {
+                    throw new ServletException("Formato inválido en tamaños de subred: " + linea);
+                }
+            }
+
+            // 3. Realizar cálculo VLSM
+            CalculadoraVLSM calculadora = new CalculadoraVLSM();
+            List<Subred> resultado = calculadora.calcular(
+                ipBase, 
+                Integer.parseInt(mascara), 
+                tamanosSubredes
+            );
+
+            // 4. Preparar respuesta
+            request.setAttribute("resultadoVLSM", resultado);
+            request.setAttribute("ipBase", ipBase);
+            request.setAttribute("mascara", mascara);
+
+            // 5. Redirección definitiva para Render
+            String contextPath = request.getContextPath();
+            
+            // Opción A: Redirección HTTP (recomendada para Render)
+            response.sendRedirect(contextPath + "/resultado.jsp");
+            
+        } catch (Exception e) {
+            // Manejo de errores mejorado
+            request.setAttribute("error", e.getMessage());
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
-
-        // Procesar el cálculo VLSM
-        CalculadoraVLSM calculadora = new CalculadoraVLSM();
-        List<Subred> resultado = calculadora.calcular(ipBase, Integer.parseInt(mascara), tamamosSubredes);
-
-        // Guardar en la sesión para usar en resultado.jsp
-        HttpSession sesion = request.getSession();
-        sesion.setAttribute("resultadoVLSM", resultado);
-        sesion.setAttribute("ipBase", ipBase);
-        sesion.setAttribute("mascara", mascara);
-
-        // Redirigir a la vista de resultados
-        request.getRequestDispatcher("resultado.jsp").forward(request, response);
     }
 }
