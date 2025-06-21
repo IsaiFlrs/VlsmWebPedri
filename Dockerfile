@@ -7,13 +7,6 @@ FROM tomcat:9.0.85-jdk17-corretto
 RUN rm -rf /usr/local/tomcat/webapps/*
 COPY --from=build /app/target/CalculadoraVLSM-1.0.war /usr/local/tomcat/webapps/ROOT.war
 
-# Configuración especial para Render
-ENV CATALINA_OPTS="-Dorg.apache.catalina.connector.RECIEVE_SHUTDOWN_VIA_HEAD=false"
-ENV CATALINA_BASE=/usr/local/tomcat
-ENV PATH=$CATALINA_BASE/bin:$PATH
-
-# Añade esta variable de entorno
 ENV CATALINA_OPTS="-Dserver.servlet.context-path=/"
-
 EXPOSE 8080
 CMD ["catalina.sh", "run"]
