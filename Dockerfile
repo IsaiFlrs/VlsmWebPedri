@@ -12,5 +12,8 @@ ENV CATALINA_OPTS="-Dorg.apache.catalina.connector.RECIEVE_SHUTDOWN_VIA_HEAD=fal
 ENV CATALINA_BASE=/usr/local/tomcat
 ENV PATH=$CATALINA_BASE/bin:$PATH
 
+# Añade esta variable de entorno
+ENV CATALINA_OPTS="-Dserver.servlet.context-path=/"
+
 EXPOSE 8080
 CMD ["catalina.sh", "run"]
