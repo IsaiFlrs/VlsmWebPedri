@@ -1,12 +1,15 @@
 package com.calculadoravlsm.vlsm;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+// ✅ Agregar estos dos:
+import com.calculadoravlsm.vlsm.CalculadoraVLSM;
+import com.calculadoravlsm.vlsm.Subred;
 
 @WebServlet("/ControladorVLSM") // Versión simplificada
 public class ControladorVLSM extends HttpServlet {
